@@ -1,0 +1,43 @@
+
+
+services:  # Определение сервисов
+  redis:  # Настройки сервиса Redis
+    image: redis:7.2.4-alpine  # Используемый образ
+
+  django:  # Настройки сервиса Django
+    container_name: django  # Имя контейнера
+    build:
+      context: .  # Путь в директорию, из которой Dockerfile будет собран для создания контейнера Django.
+    ports:  # Применение порта 8000 из контейнера на хосте
+      - 8000:8000
+    volumes:
+      - ./back:/app  # Монтирование локального каталога проекта в контейнер
+    command: python manage.py runserver 0.0.0.0:8000  # Команда запуска сервера Django
+    depends_on:
+      - redis  # Зависимость от сервиса Redis
+      - postgres
+    env_file:
+      - ./.env
+
+  celery:  # Настройки сервиса Celery
+    container_name: celery  # Имя контейнера
+    build:
+      context: .  # Путь к celery.py
+    command: celery -A diplom_project worKer -l INFO  # Команда запуска Celery с логированием на уровне INFO
+    volumes:
+      - ./back:/app  # Монтирование локального каталога проекта в контейнер
+    depends_on:
+      - django  # Зависимость от сервиса Django
+
+  postgres: # Настройки сервиса PostgreSQL
+    container_name: postgres  # Имя контейнера
+    image: postgres:14.5  # Используемый образ PostgreSQL
+    environment: # Переменные окружения для конфигурации базы данных
+      POSTGRES_DB: ${NAME_DB}  # Имя вашей базы данных
+      POSTGRES_USER: postgres  # Имя пользователя базы данных
+      POSTGRES_PASSWORD: ${PASSWORD_DB}  # Пароль пользователя базы данных
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Монтирование тома для данных базы данных
+
+volumes:
+  postgres_data:  # Определение тома для данных PostgreSQL
