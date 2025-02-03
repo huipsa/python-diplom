@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'drf_spectacular',
+    'baton'
 
     'my_app',
     'rest_framework',
@@ -72,6 +73,7 @@ SOCIAL_AUTH_FACEBOOK_SECRET = '<YOUR_FACEBOOK_APP_SECRET>'
 # Настройки редиректа после успешного входа
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
 
 
 
@@ -187,3 +189,10 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+BATON = {
+    'SITE_NAME': 'My BOTTLE DONT TOUCH', # Персоналити-чек
+    'APP_LIST': (
+        'app_name',
+    ),
+}
