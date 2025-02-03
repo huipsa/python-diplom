@@ -40,6 +40,10 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from yaml import load, Loader
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
+
 
 class RegisterAccount(APIView):
     """
@@ -899,3 +903,12 @@ class PartnerOrders(APIView):
 
         serializer = OrderSerializer(order, many=True)
         return Response(serializer.data)
+
+class ThrottledView(APIView):
+    """
+    Простое API с ограничением количества запросов.
+    """
+    throttle_classes = [AnonRateThrottle, UserRateThrottle]
+
+    def get(self, request):
+        return Response({"message": "Запрос принят!"})
