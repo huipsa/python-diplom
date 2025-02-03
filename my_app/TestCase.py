@@ -1,5 +1,10 @@
+import os
+os.environ['DJANGO_SETTINGS_MODULE'] = 'diplom_project/settings.py'
+import django
+django.setup()
 from django.test import TestCase
 from rest_framework.test import APIClient
+
 
 class ThrottleTestCase(TestCase):
     def setUp(self):
