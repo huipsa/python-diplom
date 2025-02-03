@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'drf_spectacular',
+    'cachalot',
     'baton'
 
     'my_app',
@@ -195,4 +196,11 @@ BATON = {
     'APP_LIST': (
         'app_name',
     ),
+}
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/1', 
+    }
 }
