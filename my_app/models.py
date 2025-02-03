@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-
+from easy_thumbnails.fields import ThumbnailerImageField
+from .tasks import create_thumbnail_for_product, create_thumbnail_for_user_avatar
 from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import gettext_lazy as _
 from django_rest_passwordreset.tokens import get_token_generator
@@ -316,3 +317,35 @@ class ConfirmEmailToken(models.Model):
     def set_expiry(self, seconds):
         """Для установки срока действия для этого токена."""
         self.expires = self.created_at + timedelta(seconds=seconds)
+
+class UserProfile(models.Model):  # Аватар пользователя
+    user = models.OneToOneField('auth.User', on_delete=models.CASCADE)
+    avatar = ThumbnailerImageField(upload_to='avatars/', blank=True, null=True)
+
+    def __str__(self):
+        return self.user.username
+    
+class Product(models.Model):  # Изображение товара
+    name = models.CharField(max_length=100)
+    image = ThumbnailerImageField(upload_to='products/', blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+    
+class Product(models.Model):
+    name = models.CharField(max_length=100)
+    image = ThumbnailerImageField(upload_to='products/', blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        super(Product, self).save(*args, **kwargs)
+        if self.image:
+            create_thumbnail_for_product.delay(self.id)
+
+class UserProfile(models.Model):
+    user = models.OneToOneField('auth.User', on_delete=models.CASCADE)
+    avatar = ThumbnailerImageField(upload_to='avatars/', blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        super(UserProfile, self).save(*args, **kwargs)
+        if self.avatar:
+            create_thumbnail_for_user_avatar.delay(self.user.id)

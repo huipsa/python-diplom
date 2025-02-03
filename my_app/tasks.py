@@ -1,5 +1,6 @@
 from celery import shared_task
-
+from easy_thumbnails.files import get_thumbnailer
+from .models import Product, UserProfile
 from django.core.mail import send_mail
 from django_rest_passwordreset.models import ResetPasswordToken
 from celery import shared_task
@@ -66,4 +67,27 @@ def reset_password_task(password, token):
 
     return {'status': 'OK'}
 
+@shared_task
+def create_thumbnail_for_product(product_id):
+    product = Product.objects.get(id=product_id)
+    if product.image:
+        thumbnailer = get_thumbnailer(product.image)
+        thumbnail = thumbnailer.get_thumbnail({
+            'size': (100, 100),
+            'crop': True,
+        })
+        # Создаем миниатюру для загрузки (если необходимо сохранить где-то)
+        thumbnail.save()
 
+
+@shared_task
+def create_thumbnail_for_user_avatar(user_id):
+    user_profile = UserProfile.objects.get(user_id=user_id)
+    if user_profile.avatar:
+        thumbnailer = get_thumbnailer(user_profile.avatar)
+        thumbnail = thumbnailer.get_thumbnail({
+            'size': (100, 100),
+            'crop': True,
+        })
+        # Сохраняем миниатюру (если нужно)
+        thumbnail.save()
