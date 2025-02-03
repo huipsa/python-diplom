@@ -44,6 +44,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+import rollbar
 
 class RegisterAccount(APIView):
     """
@@ -912,3 +915,11 @@ class ThrottledView(APIView):
 
     def get(self, request):
         return Response({"message": "Запрос принят!"})
+
+class RollbarTestView(APIView):
+    def get(self, request, *args, **kwargs):
+        try:
+            raise ValueError("Тестовое исключение для Rollbar")
+        except Exception as e:
+            rollbar.report_exc_info()  # Отправляем исключение в Rollbar
+            raise  # Повторно выбрасываем ошибку для отображения

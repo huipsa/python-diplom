@@ -1,6 +1,8 @@
 from pathlib import Path
 
 import os
+import rollbar
+import rollbar.contrib.django.middleware as rollbar_middleware
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -87,6 +89,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'rollbar.contrib.django.middleware.RollbarNotifierMiddleware',
 ]
 
 ROOT_URLCONF = 'diplom_project.urls'
@@ -204,3 +207,12 @@ CACHES = {
         'LOCATION': 'redis://127.0.0.1:6379/1', 
     }
 }
+
+ROLLBAR = {
+    'access_token': 'ab6875b8ee6e42919ba7cad6c1b9d908',
+    'environment': 'development' if DEBUG else 'production',
+    'code_version': '1.0',
+    'root': BASE_DIR,
+}
+
+rollbar.init(**ROLLBAR)

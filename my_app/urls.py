@@ -1,5 +1,6 @@
 from django.urls import path
 from django_rest_passwordreset.views import reset_password_request_token, reset_password_confirm
+from .views import RollbarTestView
 
 from my_app.views import *
 
@@ -34,4 +35,5 @@ urlpatterns = [
 
     path('partner/orders', PartnerOrders.as_view(), name='partner-orders'),  # Класс для получения заказов поставщиками.
     path('user/list/', CustomUserList.as_view(), name='custom_userList'),  # Для теста.
+    path('test-rollbar/', RollbarTestView.as_view(), name='test-rollbar'),
 ]
